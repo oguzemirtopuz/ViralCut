@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ViralCut Pro — Dinamik Moment Dedektörü</title>
+<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Chakra+Petch:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-deep:#03060d;--bg-primary:#080e1e;--bg-secondary:#0e1a35;--bg-card:#111d3a;
+  --border:#1a2d54;--text-primary:#e4eaf6;--text-secondary:#7b8bb5;--text-muted:#3d4f78;
+  --accent-viral:#ff1744;--accent-electric:#00e5ff;--accent-gold:#ffab00;
+  --accent-success:#00e676;--shadow:rgba(0,0,0,.4);--overlay:rgba(0,0,0,.8);
+  --timeline-bg:#0a1224;
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg-deep);color:var(--text-primary);min-height:100vh;overflow-x:hidden;}
+h1,h2,h3{font-family:'Chakra Petch',sans-serif;font-weight:700}
+.brand{font-family:'Audiowide',cursive;letter-spacing:2px}
+.mono{font-family:'Fira Code',monospace}
+
+/* UPLOAD */
+#uploadSection{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;position:relative;}
+.upload-logo{text-align:center;margin-bottom:2.5rem;}
+.upload-logo h1{font-size:3rem;background:linear-gradient(135deg,var(--accent-electric),var(--accent-viral));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.dropzone{width:100%;max-width:560px;border:2.5px dashed var(--border);border-radius:20px;padding:3.5rem 2rem;text-align:center;cursor:pointer;background:var(--bg-secondary);transition:0.3s;}
+.dropzone:hover{border-color:var(--accent-electric);box-shadow:0 0 40px rgba(0,229,255,0.2)}
+
+/* APP UI */
+#appSection{display:none;flex-direction:column;min-height:100vh}
+#appSection.visible{display:flex;}
+.top-bar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;background:var(--bg-secondary);border-bottom:1px solid var(--border);}
+.btn{font-family:'Chakra Petch',sans-serif;font-weight:600;border:none;cursor:pointer;border-radius:10px;padding:.6rem 1.2rem;transition:0.2s;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;font-size:0.9rem}
+.btn-primary{background:linear-gradient(135deg,var(--accent-viral),#ff6d00);color:#fff;}
+.btn-ghost{background:transparent;color:var(--text-secondary);border:1px solid var(--border)}
+.btn-success{background:var(--accent-success);color:#000;}
+
+.player-container{max-width:900px;margin:1rem auto;border-radius:14px;overflow:hidden;background:#000;box-shadow:0 8px 32px var(--shadow)}
+video{width:100%;display:block;max-height:50vh}
+
+.controls-bar{display:flex;align-items:center;gap:1.5rem;padding:1rem 1.5rem;background:var(--bg-secondary);border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.controls-bar label{font-size:.75rem;text-transform:uppercase;color:var(--text-muted);font-weight:700}
+input[type="range"]{-webkit-appearance:none;width:150px;height:6px;border-radius:3px;background:var(--border);outline:none;margin-top:5px}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent-electric);cursor:pointer;}
+
+.progress-container{padding:1rem 1.5rem;background:var(--bg-secondary);border-bottom:1px solid var(--border)}
+.progress-outer{height:8px;background:var(--bg-primary);border-radius:4px;overflow:hidden;margin-bottom:.5rem}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent-electric),var(--accent-viral));width:0;transition:0.3s}
+
+/* TIMELINE & MOMENTS */
+.timeline-section{padding:1rem 1.5rem;background:var(--bg-secondary);border-bottom:1px solid var(--border)}
+.timeline-wrap{height:100px;background:var(--timeline-bg);border-radius:8px;position:relative}
+#timelineCanvas{width:100%;height:100%;display:block}
+
+.moments-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;padding:1.5rem}
+.moment-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.card-thumb{position:relative;aspect-ratio:16/9;background:#000}
+.card-thumb img{width:100%;height:100%;object-fit:cover}
+.card-badge{position:absolute;top:.5rem;left:.5rem;background:var(--accent-viral);color:#fff;padding:.3rem .6rem;border-radius:8px;font-size:.7rem;font-weight:700}
+.card-body{padding:1rem}
+
+/* MODAL & TOAST */
+.modal-overlay{position:fixed;inset:0;background:var(--overlay);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:0.3s}
+.modal-overlay.show{opacity:1;pointer-events:auto}
+.modal{background:var(--bg-card);border:1px solid var(--border);border-radius:18px;width:100%;max-width:480px;padding:1.5rem;}
+.modal input.text-input{background:var(--bg-primary);border:1px solid var(--border);color:#fff;padding:0.6rem;border-radius:8px;width:100%;font-family:monospace;font-size:1rem;margin-top:5px;outline:none}
+.modal input.text-input:focus{border-color:var(--accent-electric)}
+
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(50px);background:var(--bg-card);border:1px solid var(--border);padding:.8rem 1.5rem;border-radius:12px;z-index:200;transition:0.4s;opacity:0}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<div id="uploadSection">
+  <div class="upload-logo">
+    <h1 class="brand">VIRALCUT PRO</h1>
+    <p style="color:var(--text-secondary); margin-top:10px">Görüntü ve Ses Senkronlu Viral An Yakalayıcı</p>
+  </div>
+  <div class="dropzone" id="dropzone">
+    <i class="fas fa-video" style="font-size:3rem; color:var(--accent-electric); margin-bottom:1rem"></i>
+    <h2>Videoyu Buraya Sürükle</h2>
+    <p>veya bilgisayarından seç</p>
+    <input type="file" id="fileInput" accept="video/*" style="display:none">
+  </div>
+</div>
+
+<div id="appSection">
+  <header class="top-bar">
+    <div class="brand" style="font-size:1.2rem; color:var(--accent-electric)">VIRALCUT</div>
+    <button class="btn btn-ghost" onclick="location.reload()"><i class="fas fa-arrow-left"></i> Yeni Video Seç</button>
+  </header>
+
+  <div class="player-container">
+    <video id="videoPlayer" controls playsinline></video>
+  </div>
+
+  <div class="controls-bar">
+    <div>
+      <label>Hassasiyet Seviyesi: <span id="sensVal" style="color:var(--accent-electric)">5</span></label>
+      <br>
+      <input type="range" id="sensitivityRange" min="1" max="10" value="5" oninput="document.getElementById('sensVal').innerText=this.value">
+      <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px">Düşük = Seçici | Yüksek = Çok Klip</div>
+    </div>
+    
+    <div style="margin-left:auto; display:flex; gap:10px;">
+      <button class="btn btn-ghost" id="manualCutBtn"><i class="fas fa-cut"></i> MANUEL KESİM</button>
+      <button class="btn btn-primary" id="analyzeBtn"><i class="fas fa-radar"></i> VİRAL ANLARI BUL</button>
+    </div>
+  </div>
+
+  <div class="progress-container hidden" id="progressContainer">
+    <div class="progress-outer"><div class="progress-fill" id="progressFill"></div></div>
+    <div id="progressPhase" style="font-size:.8rem; color:var(--text-secondary); text-align:center">Analiz ediliyor...</div>
+  </div>
+
+  <div class="timeline-section hidden" id="timelineSection">
+    <h3 style="font-size:.8rem; margin-bottom:10px; color:var(--text-muted)">VİRAL ENERJİ GRAFİĞİ</h3>
+    <div class="timeline-wrap">
+      <canvas id="timelineCanvas"></canvas>
+    </div>
+  </div>
+
+  <div class="moments-grid" id="momentsGrid"></div>
+</div>
+
+<div class="modal-overlay" id="actionModal">
+  <div class="modal">
+    <h3 id="modalTitle" style="margin-bottom:1rem; display:flex; align-items:center; gap:10px">
+      <i class="fas fa-scissors" style="color:var(--accent-viral)"></i> Klibi Ayarla
+    </h3>
+    <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1.5rem">
+      Süreleri "Dakika:Saniye" (Örn: 1:10) veya doğrudan saniye (Örn: 70) olarak girebilirsiniz.
+    </p>
+    
+    <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1.5rem">
+      <div style="flex:1">
+        <label style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">BAŞLANGIÇ</label>
+        <input type="text" id="modalStart" class="text-input" placeholder="Örn: 1:10 veya 70">
+      </div>
+      <div style="flex:1">
+        <label style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">BİTİŞ</label>
+        <input type="text" id="modalEnd" class="text-input" placeholder="Örn: 1:20 veya 80">
+      </div>
+    </div>
+    
+    <div id="recordProgress" class="hidden" style="margin-bottom:1.5rem;">
+      <div style="font-size:0.85rem; color:var(--accent-electric); font-weight:bold; text-align:center; margin-bottom: 8px;">
+        <i class="fas fa-circle text-danger blink"></i> <span id="progressText">Sunucuya aktarılıyor, lütfen bekleyin...</span>
+      </div>
+      <div style="height:8px; background:var(--bg-primary); border-radius:4px; overflow:hidden;">
+        <div id="uploadProgressBar" style="height:100%; background:linear-gradient(90deg,var(--accent-electric),var(--accent-viral)); width:0; transition:0.2s"></div>
+      </div>
+    </div>
+    
+    <div style="display:flex; justify-content:flex-end; gap:0.5rem">
+      <button class="btn btn-ghost" onclick="document.getElementById('actionModal').classList.remove('show')">İptal</button>
+      <button class="btn btn-primary" id="modalPreviewBtn"><i class="fas fa-play"></i> İzle</button>
+      <button class="btn btn-success" id="modalExportBtn"><i class="fas fa-download"></i> İndir</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= STATE ================= */
+const state = {
+  videoFile: null, videoUrl: null, duration: 0, interval: 0.5,
+  audioEnergy: [], visualChanges: [], combined: [], moments: [], isAnalyzing: false
+};
+
+const $ = s => document.querySelector(s);
+const video = $('#videoPlayer');
+
+/* ================= YÜKLEME ================= */
+$('#dropzone').onclick = () => $('#fileInput').click();
+$('#fileInput').onchange = e => { if(e.target.files[0]) handleFile(e.target.files[0]); };
+
+function handleFile(file) {
+    if (state.videoUrl) URL.revokeObjectURL(state.videoUrl);
+    state.videoFile = file;
+    state.videoUrl = URL.createObjectURL(file);
+    video.src = state.videoUrl;
+    video.onloadedmetadata = () => {
+        state.duration = video.duration;
+        $('#uploadSection').style.display = 'none';
+        $('#appSection').classList.add('visible');
+    };
+}
+
+/* ================= ANALİZ ================= */
+$('#analyzeBtn').onclick = async () => {
+    if (state.isAnalyzing) return;
+    state.isAnalyzing = true;
+    $('#progressContainer').classList.remove('hidden');
+    $('#timelineSection').classList.add('hidden');
+    $('#momentsGrid').innerHTML = '';
+    
+    try {
+        updateProgress(15, "Ses analiz ediliyor...");
+        state.audioEnergy = await analyzeAudio(state.videoFile);
+
+        updateProgress(45, "Görüntü (hareket) analiz ediliyor...");
+        state.visualChanges = await analyzeVisual(video, state.duration);
+
+        updateProgress(75, "Viral potansiyel hesaplanıyor (Ses + Görüntü)...");
+        state.combined = combineScores(state.audioEnergy, state.visualChanges);
+        
+        state.moments = detectMoments(state.combined, parseInt($('#sensitivityRange').value), state.duration, state.interval, state.visualChanges);
+
+        for(let i=0; i<state.moments.length; i++) {
+            updateProgress(80 + (i/state.moments.length)*20, `Klipler hazırlanıyor: ${i+1}/${state.moments.length}`);
+            state.moments[i].thumbnail = await generateThumbnail(video, state.moments[i].peakTime);
+        }
+
+        renderMoments();
+        $('#timelineSection').classList.remove('hidden');
+        drawTimeline();
+        showToast("Viral anlar başarıyla bulundu!", "success");
+    } catch (e) {
+        showToast("Bir hata oluştu: " + e.message, "error");
+    }
+    
+    state.isAnalyzing = false;
+    $('#progressContainer').classList.add('hidden');
+};
+
+/* --- DİNAMİK HESAPLAMA (GÜNCELLENMİŞ ANTI-OUTRO & NEFES PAYI) --- */
+function detectMoments(scores, sensitivity, videoDur, interval, visualScores) {
+  if (scores.length < 3) return [];
+  
+  const mean = scores.reduce((a,b) => a+b, 0) / scores.length;
+  const std = Math.sqrt(scores.reduce((a,b) => a + (b - mean) ** 2, 0) / scores.length);
+  if (std === 0) return [];
+
+  // 1. MİNİMUM KALİTE & PEAK (Tepe Noktası) Ayarı
+  const factor = 3.0 - (sensitivity / 10) * 2.5; 
+  // Anlamlı bir kırılma (peak) olmalı: threshold ortalamadan %50 daha yüksek olmalı, değilse mean * 1.5 uygula.
+  const threshold = Math.max(mean + factor * std, mean * 1.5); 
+  
+  // 2. ANTI-OUTRO: Görsel ortalama
+  const visMean = visualScores ? (visualScores.reduce((a,b) => a+b, 0) / visualScores.length) : 0;
+  // Görsel değişim ortalamanın %30'undan düşükse, orayı "sabit" veya "statik" kabul et
+  const staticVisualThreshold = visMean * 0.3; 
+  
+  // 3. ANTI-ERKEN KESİM: Soğuma (Cooldown) toleransı
+  // Önceden bu değer yüksek olduğu için enerji azıcık düşse klip bölünyordu.
+  // Şimdi ortalamanın biraz altı olarak belirledik ki küçük sessizliklerde/nefes aralarında klip kopmasın
+  const cooldownThreshold = mean - (std * 0.1); 
+  
+  const peaks = [];
+  const processedIndices = new Set();
+  const maxLowEnergyDuration = 5; // 5 saniye boyunca enerji düşük kalırsa kes (Önceden 3 saniyeydi, uzattık)
+
+  for (let i = 1; i < scores.length - 1; i++) {
+    if (scores[i] >= threshold && scores[i] >= scores[i-1] && scores[i] >= scores[i+1] && !processedIndices.has(i)) {
+      
+      const currentTime = i * interval;
+      
+      // ANTI-OUTRO KONTROLÜ
+      // Kliplenecek bu zirve noktası, videonun son %10'luk dilimi veya son 15 saniyesi mi?
+      const isOutroRegion = currentTime > (videoDur - Math.max(15, videoDur * 0.1));
+      
+      if (isOutroRegion && visualScores) {
+          let localVisSum = 0;
+          let count = 0;
+          let windowSize = Math.floor(2 / interval); // Tepe noktası çevresindeki 2-4 saniyeye bak
+          for(let v = Math.max(0, i - windowSize); v <= Math.min(visualScores.length-1, i + windowSize); v++) {
+              localVisSum += visualScores[v];
+              count++;
+          }
+          let localVisAvg = localVisSum / (count || 1);
+          
+          if (localVisAvg < staticVisualThreshold) {
+              // Tepe anında dahi (müzik filan olsa bile) görsel çok statik
+              continue; // Bu anı tamamen yoksay!
+          }
+      }
+
+      let startIdx = i;
+      // Öncesine doğru genişlet...
+      while (startIdx > 0 && scores[startIdx] > cooldownThreshold && (i - startIdx) * interval < 15) {
+          startIdx--;
+      }
+      
+      let endIdx = i;
+      let lowEnergyCount = 0;
+      
+      // Sonrasına doğru genişlet (ANTI-ERKEN KESİM KONTROLÜ)
+      while (endIdx < scores.length - 1) {
+        endIdx++;
+        if (scores[endIdx] < cooldownThreshold) {
+            lowEnergyCount++; 
+        } else {
+            // Eğer enerji tekrar toparlarsa (örneğin konuştuysa), düşük enerji sayacını sıfırla!
+            lowEnergyCount = 0; 
+        }
+        
+        // Düşük enerji (sessizlik) belirlediğimiz süreyi ('maxLowEnergyDuration' yani 5sn) geçerse kes.
+        // Ayrıca maksimum klibi sonsuza uzatmamak için genelde maks 60sn limit koyarız.
+        if (lowEnergyCount > (maxLowEnergyDuration / interval) || (endIdx - startIdx) * interval > 60) break;
+      }
+
+      // 5 saniyelik düşük enerji sessizliğini klibin içerisinden kırp (çok uzun sürmesin)
+      if (lowEnergyCount > 0) {
+          endIdx = Math.max(i, endIdx - lowEnergyCount);
+      }
+
+      for (let k = startIdx; k <= endIdx; k++) processedIndices.add(k);
+      
+      const dur = (endIdx - startIdx) * interval;
+      // KALİTE FİLTRESİ: Klip mininum 5 saniyesi olmalı! (Değerli klipler)
+      if (dur >= 5) {
+          peaks.push({ idx: i, startIdx, endIdx, score: scores[i] });
+      }
+    }
+  }
+
+  return peaks.sort((a,b) => b.score - a.score).slice(0, 10).map((p, rank) => {
+      // YENİ: Başlangıçtan önce 1.5 saniye, bitişten sonra 2.5 saniye ekstra "Nefes Payı" eklemeye devam ediyoruz.
+      let sTime = Math.max(0, (p.startIdx * interval) - 1.5);
+      let eTime = Math.min(videoDur, (p.endIdx * interval) + 2.5);
+      
+      return {
+          rank: rank + 1,
+          peakTime: p.idx * interval,
+          startTime: Math.round(sTime * 10) / 10,
+          endTime: Math.round(eTime * 10) / 10,
+          duration: Math.round((eTime - sTime) * 10) / 10,
+          score: p.score
+      };
+  });
+}
+
+/* ================= YARDIMCILAR ================= */
+async function analyzeAudio(file) {
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const response = new Response(file);
+        const arrayBuf = await response.arrayBuffer();
+        const audioBuf = await audioCtx.decodeAudioData(arrayBuf);
+        const data = audioBuf.getChannelData(0);
+        const step = Math.floor(audioBuf.sampleRate * state.interval);
+        const energy = [];
+        for (let i = 0; i < data.length; i += step) {
+            let sum = 0;
+            const end = Math.min(i + step, data.length);
+            for (let j = i; j < end; j++) sum += data[j] * data[j];
+            energy.push(Math.sqrt(sum / (end - i)));
+        }
+        audioCtx.close();
+        return energy;
+    } catch (e) { return []; }
+}
+
+async function analyzeVisual(vid, duration) {
+    const cvs = document.createElement('canvas');
+    cvs.width = 160; cvs.height = 90;
+    const ctx = cvs.getContext('2d', { willReadFrequently: true });
+    const changes = [];
+    let prev = null;
+    for (let i = 0; i < duration; i += state.interval) {
+        vid.currentTime = i;
+        await new Promise(r => { vid.onseeked = r; });
+        ctx.drawImage(vid, 0, 0, 160, 90);
+        const curr = ctx.getImageData(0,0,160,90).data;
+        if (prev) {
+            let diff = 0;
+            for (let j = 0; j < curr.length; j += 16) diff += Math.abs(curr[j] - prev[j]);
+            changes.push(diff / 10000);
+        } else changes.push(0);
+        prev = new Uint8ClampedArray(curr);
+    }
+    return changes;
+}
+
+function combineScores(a, v) {
+    const maxA = a.length ? Math.max(...a) : 1;
+    const maxV = v.length ? Math.max(...v) : 1;
+    const combined = [];
+    const len = Math.max(a.length, v.length);
+    for (let i = 0; i < len; i++) {
+        const aVal = i < a.length ? (a[i] / maxA) : 0;
+        const vVal = i < v.length ? (v[i] / maxV) : 0;
+        combined.push((aVal * 0.6) + (vVal * 0.4));
+    }
+    return combined;
+}
+
+async function generateThumbnail(vid, time) {
+    vid.currentTime = Math.min(time, state.duration - 0.1);
+    await new Promise(r => vid.onseeked = r);
+    const cvs = document.createElement('canvas');
+    cvs.width = 640; cvs.height = 360;
+    cvs.getContext('2d').drawImage(vid, 0, 0, 640, 360);
+    return cvs.toDataURL('image/jpeg', 0.8);
+}
+
+function updateProgress(p, text) {
+    $('#progressFill').style.width = p + '%';
+    $('#progressPhase').innerText = text;
+}
+
+// Süreyi Dakika:Saniye formatında (1:10) veya düz saniye olarak göstermek için
+function formatTimeDisp(sec) {
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return m > 0 ? `${m}:${s.toString().padStart(2, '0')}` : `${s}sn`;
+}
+
+function renderMoments() {
+    const grid = $('#momentsGrid');
+    if (state.moments.length === 0) {
+        grid.innerHTML = '<div style="color:var(--text-muted); padding:2rem; text-align:center; width:100%">Viral olabilecek bir an bulunamadı. Lütfen hassasiyeti artırın.</div>';
+        return;
+    }
+    state.moments.forEach(m => {
+        const card = document.createElement('div');
+        card.className = 'moment-card';
+        card.innerHTML = `
+            <div class="card-thumb">
+                <img src="${m.thumbnail}">
+                <div class="card-badge">#${m.rank} Viral</div>
+            </div>
+            <div class="card-body">
+                <div style="font-weight:700; color:var(--accent-gold); margin-bottom:5px">${m.duration} Saniye Klip</div>
+                <div style="font-size:.75rem; color:var(--text-secondary); margin-bottom:15px; font-family:monospace">
+                    ${formatTimeDisp(m.startTime)} ➔ ${formatTimeDisp(m.endTime)}
+                </div>
+                
+                <div style="display:flex; gap:10px">
+                    <button class="btn btn-ghost" style="flex:1" onclick="preview(${m.startTime}, ${m.endTime})"><i class="fas fa-play"></i> İzle</button>
+                    <button class="btn btn-primary" style="flex:1" onclick="openActionModal(${m.startTime}, ${m.endTime}, 'Klibi İndir')"><i class="fas fa-download"></i> İndir</button>
+                </div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function drawTimeline() {
+    const c = $('#timelineCanvas');
+    const ctx = c.getContext('2d');
+    c.width = c.offsetWidth; c.height = 100;
+    if (state.combined.length === 0) return;
+    ctx.fillStyle = "rgba(0, 229, 255, 0.4)";
+    state.combined.forEach((val, i) => {
+        const h = val * 90;
+        ctx.fillRect(i * (c.width / state.combined.length), 100 - h, 2, h);
+    });
+}
+
+/* ================= MANUEL KESİM & İNDİRME ================= */
+
+// "1:10" formatını saniyeye çevirir. "70" girilirse doğrudan saniye alır.
+function parseTimeInput(val) {
+    if (!val) return 0;
+    val = String(val).trim().replace(',', '.');
+    if (val.includes(':')) {
+        let p = val.split(':');
+        return (parseInt(p[0]) || 0) * 60 + parseFloat(p[1] || 0);
+    }
+    return parseFloat(val) || 0;
+}
+
+window.openActionModal = (start, end, title = 'Manuel Kesim') => {
+    $('#modalTitle').innerHTML = `<i class="fas fa-scissors" style="color:var(--accent-viral)"></i> ${title}`;
+    $('#modalStart').value = start || '';
+    $('#modalEnd').value = end || '';
+    $('#actionModal').classList.add('show');
+};
+
+$('#manualCutBtn').onclick = () => {
+    if(!state.videoFile) { showToast("Önce bir video seçmelisiniz!", "error"); return; }
+    openActionModal('', '', 'Manuel Kesim');
+};
+
+$('#modalPreviewBtn').onclick = () => {
+    const start = parseTimeInput($('#modalStart').value);
+    const end = parseTimeInput($('#modalEnd').value);
+    if (end <= start) { showToast("Bitiş süresi başlangıçtan büyük olmalı!", "error"); return; }
+    
+    $('#actionModal').classList.remove('show');
+    preview(start, end);
+};
+
+window.preview = (start, end) => {
+    video.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    video.currentTime = start;
+    video.play();
+    const iv = setInterval(() => {
+        if(video.currentTime >= end) { video.pause(); clearInterval(iv); }
+    }, 100);
+};
+
+$('#modalExportBtn').onclick = async () => {
+    const start = parseTimeInput($('#modalStart').value);
+    const end = parseTimeInput($('#modalEnd').value);
+    const btn = $('#modalExportBtn');
+    
+    if (end <= start) { showToast("Bitiş süresi başlangıçtan büyük olmalı!", "error"); return; }
+    if (!state.videoFile) { showToast("Video dosyası bulunamadı!", "error"); return; }
+
+    btn.disabled = true;
+    $('#modalPreviewBtn').disabled = true;
+    $('#recordProgress').classList.remove('hidden');
+
+    try {
+        if (!state.videoFile) { showToast("Video bulunamadı", "error"); return; }
+        
+        const xhr = new XMLHttpRequest();
+        // Query parameters bypass the need for FormData parsing
+        const urlReq = `http://localhost:8000/api/cut_raw?start=${start}&end=${end}`;
+        xhr.open("POST", urlReq, true);
+        xhr.responseType = "blob";
+        // Tell backend we're sending raw binary
+        xhr.setRequestHeader("Content-Type", state.videoFile.type || "application/octet-stream");
+
+        xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+                const percent = (e.loaded / e.total) * 100;
+                $('#uploadProgressBar').style.width = percent + '%';
+                if (Math.round(percent) === 100) {
+                    $('#progressText').innerText = "Video kesiliyor, son dokunuşlar...";
+                } else {
+                    $('#progressText').innerText = `Veri Aktarılıyor: %${Math.round(percent)}`;
+                }
+            }
+        };
+
+        const cleanup = () => {
+            btn.disabled = false;
+            $('#modalPreviewBtn').disabled = false;
+            $('#recordProgress').classList.add('hidden');
+            $('#actionModal').classList.remove('show');
+            $('#uploadProgressBar').style.width = '0%';
+        };
+
+        xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                const blob = xhr.response;
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `ViralCut_${start}s-${end}s.mp4`;
+                a.click();
+                showToast("Klip yüksek kalitede başarıyla indirildi!", "success");
+            } else {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    try {
+                        const errData = JSON.parse(reader.result);
+                        showToast("Hata: " + (errData.detail || errData.error || "Kesim başarısız oldu"), "error");
+                    } catch {
+                        showToast("Hata: Beklenmeyen bir sunucu hatası.", "error");
+                    }
+                };
+                reader.readAsText(xhr.response);
+            }
+            cleanup();
+        };
+
+        xhr.onerror = () => {
+            showToast("Hata: Sunucu ile bağlantı kurulamadı.", "error");
+            cleanup();
+        };
+
+        xhr.send(state.videoFile);
+        
+    } catch (e) {
+        console.error(e);
+        showToast("Hata: " + e.message, "error");
+        btn.disabled = false;
+        $('#modalPreviewBtn').disabled = false;
+        $('#recordProgress').classList.add('hidden');
+        $('#uploadProgressBar').style.width = '0%';
+    }
+};
+
+function showToast(msg, type) {
+    const t = $('#toast');
+    t.innerText = msg;
+    t.className = 'toast show';
+    t.style.borderColor = type === 'error' ? 'var(--accent-viral)' : 'var(--accent-success)';
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
