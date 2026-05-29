@@ -77,7 +77,7 @@ async def cut_video_raw(
             print(f"FFmpeg Error:\n{process.stderr}")
             cleanup_files(input_path, output_path)
             from fastapi import HTTPException
-            raise HTTPException(status_code=500, detail=f"Kesim işlemi başarısız. FFmpeg Hatası: {process.stderr[-200:]}")
+            raise HTTPException(status_code=500, detail=f"Cutting process failed. FFmpeg Error: {process.stderr[-200:]}")
 
         print("FFmpeg process completed successfully.")
 
@@ -93,7 +93,7 @@ async def cut_video_raw(
     except subprocess.TimeoutExpired:
         cleanup_files(input_path, output_path)
         from fastapi import HTTPException
-        raise HTTPException(status_code=504, detail="İşlem zaman aşımına uğradı (Video çok büyük olabilir).")
+        raise HTTPException(status_code=504, detail="Process timed out (Video might be too large).")
     except HTTPException:
         raise
     except Exception as e:

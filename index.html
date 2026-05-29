@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>ViralCut Pro — Dinamik Moment Dedektörü</title>
+<title>ViralCut Pro — Dynamic Moment Detector</title>
 <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Chakra+Petch:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
@@ -77,12 +77,12 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 <div id="uploadSection">
   <div class="upload-logo">
     <h1 class="brand">VIRALCUT PRO</h1>
-    <p style="color:var(--text-secondary); margin-top:10px">Görüntü ve Ses Senkronlu Viral An Yakalayıcı</p>
+    <p style="color:var(--text-secondary); margin-top:10px">Audio-Visual Synchronized Viral Moment Catcher</p>
   </div>
   <div class="dropzone" id="dropzone">
     <i class="fas fa-video" style="font-size:3rem; color:var(--accent-electric); margin-bottom:1rem"></i>
-    <h2>Videoyu Buraya Sürükle</h2>
-    <p>veya bilgisayarından seç</p>
+    <h2>Drag Video Here</h2>
+    <p>or select from your computer</p>
     <input type="file" id="fileInput" accept="video/*" style="display:none">
   </div>
 </div>
@@ -90,7 +90,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 <div id="appSection">
   <header class="top-bar">
     <div class="brand" style="font-size:1.2rem; color:var(--accent-electric)">VIRALCUT</div>
-    <button class="btn btn-ghost" onclick="location.reload()"><i class="fas fa-arrow-left"></i> Yeni Video Seç</button>
+    <button class="btn btn-ghost" onclick="location.reload()"><i class="fas fa-arrow-left"></i> Select New Video</button>
   </header>
 
   <div class="player-container">
@@ -99,25 +99,25 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 
   <div class="controls-bar">
     <div>
-      <label>Hassasiyet Seviyesi: <span id="sensVal" style="color:var(--accent-electric)">5</span></label>
+      <label>Sensitivity Level: <span id="sensVal" style="color:var(--accent-electric)">5</span></label>
       <br>
       <input type="range" id="sensitivityRange" min="1" max="10" value="5" oninput="document.getElementById('sensVal').innerText=this.value">
-      <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px">Düşük = Seçici | Yüksek = Çok Klip</div>
+      <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px">Low = Selective | High = More Clips</div>
     </div>
     
     <div style="margin-left:auto; display:flex; gap:10px;">
-      <button class="btn btn-ghost" id="manualCutBtn"><i class="fas fa-cut"></i> MANUEL KESİM</button>
-      <button class="btn btn-primary" id="analyzeBtn"><i class="fas fa-radar"></i> VİRAL ANLARI BUL</button>
+      <button class="btn btn-ghost" id="manualCutBtn"><i class="fas fa-cut"></i> MANUAL CUT</button>
+      <button class="btn btn-primary" id="analyzeBtn"><i class="fas fa-radar"></i> FIND VIRAL MOMENTS</button>
     </div>
   </div>
 
   <div class="progress-container hidden" id="progressContainer">
     <div class="progress-outer"><div class="progress-fill" id="progressFill"></div></div>
-    <div id="progressPhase" style="font-size:.8rem; color:var(--text-secondary); text-align:center">Analiz ediliyor...</div>
+    <div id="progressPhase" style="font-size:.8rem; color:var(--text-secondary); text-align:center">Analyzing...</div>
   </div>
 
   <div class="timeline-section hidden" id="timelineSection">
-    <h3 style="font-size:.8rem; margin-bottom:10px; color:var(--text-muted)">VİRAL ENERJİ GRAFİĞİ</h3>
+    <h3 style="font-size:.8rem; margin-bottom:10px; color:var(--text-muted)">VIRAL ENERGY GRAPH</h3>
     <div class="timeline-wrap">
       <canvas id="timelineCanvas"></canvas>
     </div>
@@ -129,26 +129,26 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 <div class="modal-overlay" id="actionModal">
   <div class="modal">
     <h3 id="modalTitle" style="margin-bottom:1rem; display:flex; align-items:center; gap:10px">
-      <i class="fas fa-scissors" style="color:var(--accent-viral)"></i> Klibi Ayarla
+      <i class="fas fa-scissors" style="color:var(--accent-viral)"></i> Adjust Clip
     </h3>
     <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1.5rem">
-      Süreleri "Dakika:Saniye" (Örn: 1:10) veya doğrudan saniye (Örn: 70) olarak girebilirsiniz.
+      You can enter durations as "Minute:Second" (E.g.: 1:10) or directly in seconds (E.g.: 70).
     </p>
     
     <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1.5rem">
       <div style="flex:1">
-        <label style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">BAŞLANGIÇ</label>
-        <input type="text" id="modalStart" class="text-input" placeholder="Örn: 1:10 veya 70">
+        <label style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">START</label>
+        <input type="text" id="modalStart" class="text-input" placeholder="E.g.: 1:10 or 70">
       </div>
       <div style="flex:1">
-        <label style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">BİTİŞ</label>
-        <input type="text" id="modalEnd" class="text-input" placeholder="Örn: 1:20 veya 80">
+        <label style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">END</label>
+        <input type="text" id="modalEnd" class="text-input" placeholder="E.g.: 1:20 or 80">
       </div>
     </div>
     
     <div id="recordProgress" class="hidden" style="margin-bottom:1.5rem;">
       <div style="font-size:0.85rem; color:var(--accent-electric); font-weight:bold; text-align:center; margin-bottom: 8px;">
-        <i class="fas fa-circle text-danger blink"></i> <span id="progressText">Sunucuya aktarılıyor, lütfen bekleyin...</span>
+        <i class="fas fa-circle text-danger blink"></i> <span id="progressText">Transferring to server, please wait...</span>
       </div>
       <div style="height:8px; background:var(--bg-primary); border-radius:4px; overflow:hidden;">
         <div id="uploadProgressBar" style="height:100%; background:linear-gradient(90deg,var(--accent-electric),var(--accent-viral)); width:0; transition:0.2s"></div>
@@ -156,9 +156,9 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     </div>
     
     <div style="display:flex; justify-content:flex-end; gap:0.5rem">
-      <button class="btn btn-ghost" onclick="document.getElementById('actionModal').classList.remove('show')">İptal</button>
-      <button class="btn btn-primary" id="modalPreviewBtn"><i class="fas fa-play"></i> İzle</button>
-      <button class="btn btn-success" id="modalExportBtn"><i class="fas fa-download"></i> İndir</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('actionModal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-primary" id="modalPreviewBtn"><i class="fas fa-play"></i> Preview</button>
+      <button class="btn btn-success" id="modalExportBtn"><i class="fas fa-download"></i> Download</button>
     </div>
   </div>
 </div>
@@ -175,7 +175,7 @@ const state = {
 const $ = s => document.querySelector(s);
 const video = $('#videoPlayer');
 
-/* ================= YÜKLEME ================= */
+/* ================= UPLOAD ================= */
 $('#dropzone').onclick = () => $('#fileInput').click();
 $('#fileInput').onchange = e => { if(e.target.files[0]) handleFile(e.target.files[0]); };
 
@@ -191,7 +191,7 @@ function handleFile(file) {
     };
 }
 
-/* ================= ANALİZ ================= */
+/* ================= ANALYSIS ================= */
 $('#analyzeBtn').onclick = async () => {
     if (state.isAnalyzing) return;
     state.isAnalyzing = true;
@@ -200,35 +200,35 @@ $('#analyzeBtn').onclick = async () => {
     $('#momentsGrid').innerHTML = '';
     
     try {
-        updateProgress(15, "Ses analiz ediliyor...");
+        updateProgress(15, "Analyzing audio...");
         state.audioEnergy = await analyzeAudio(state.videoFile);
 
-        updateProgress(45, "Görüntü (hareket) analiz ediliyor...");
+        updateProgress(45, "Analyzing visual (motion)...");
         state.visualChanges = await analyzeVisual(video, state.duration);
 
-        updateProgress(75, "Viral potansiyel hesaplanıyor (Ses + Görüntü)...");
+        updateProgress(75, "Calculating viral potential (Audio + Visual)...");
         state.combined = combineScores(state.audioEnergy, state.visualChanges);
         
         state.moments = detectMoments(state.combined, parseInt($('#sensitivityRange').value), state.duration, state.interval, state.visualChanges);
 
         for(let i=0; i<state.moments.length; i++) {
-            updateProgress(80 + (i/state.moments.length)*20, `Klipler hazırlanıyor: ${i+1}/${state.moments.length}`);
+            updateProgress(80 + (i/state.moments.length)*20, `Preparing clips: ${i+1}/${state.moments.length}`);
             state.moments[i].thumbnail = await generateThumbnail(video, state.moments[i].peakTime);
         }
 
         renderMoments();
         $('#timelineSection').classList.remove('hidden');
         drawTimeline();
-        showToast("Viral anlar başarıyla bulundu!", "success");
+        showToast("Viral moments found successfully!", "success");
     } catch (e) {
-        showToast("Bir hata oluştu: " + e.message, "error");
+        showToast("An error occurred: " + e.message, "error");
     }
     
     state.isAnalyzing = false;
     $('#progressContainer').classList.add('hidden');
 };
 
-/* --- DİNAMİK HESAPLAMA (GÜNCELLENMİŞ ANTI-OUTRO & NEFES PAYI) --- */
+/* --- DYNAMIC CALCULATION (UPDATED ANTI-OUTRO & COOLDOWN TOLERANCE) --- */
 function detectMoments(scores, sensitivity, videoDur, interval, visualScores) {
   if (scores.length < 3) return [];
   
@@ -236,38 +236,38 @@ function detectMoments(scores, sensitivity, videoDur, interval, visualScores) {
   const std = Math.sqrt(scores.reduce((a,b) => a + (b - mean) ** 2, 0) / scores.length);
   if (std === 0) return [];
 
-  // 1. MİNİMUM KALİTE & PEAK (Tepe Noktası) Ayarı
+  // 1. MINIMUM QUALITY & PEAK Setting
   const factor = 3.0 - (sensitivity / 10) * 2.5; 
-  // Anlamlı bir kırılma (peak) olmalı: threshold ortalamadan %50 daha yüksek olmalı, değilse mean * 1.5 uygula.
+  // There must be a meaningful peak: threshold must be 50% higher than mean, otherwise apply mean * 1.5.
   const threshold = Math.max(mean + factor * std, mean * 1.5); 
   
-  // 2. ANTI-OUTRO: Görsel ortalama
+  // 2. ANTI-OUTRO: Visual mean
   const visMean = visualScores ? (visualScores.reduce((a,b) => a+b, 0) / visualScores.length) : 0;
-  // Görsel değişim ortalamanın %30'undan düşükse, orayı "sabit" veya "statik" kabul et
+  // If visual change is lower than 30% of the mean, consider it "static" or "stable"
   const staticVisualThreshold = visMean * 0.3; 
   
-  // 3. ANTI-ERKEN KESİM: Soğuma (Cooldown) toleransı
-  // Önceden bu değer yüksek olduğu için enerji azıcık düşse klip bölünyordu.
-  // Şimdi ortalamanın biraz altı olarak belirledik ki küçük sessizliklerde/nefes aralarında klip kopmasın
+  // 3. ANTI-EARLY CUT: Cooldown tolerance
+  // Previously this value was high so if energy dropped slightly the clip was divided.
+  // Now we set it slightly below mean so the clip doesn't break during small silences/breaths
   const cooldownThreshold = mean - (std * 0.1); 
   
   const peaks = [];
   const processedIndices = new Set();
-  const maxLowEnergyDuration = 5; // 5 saniye boyunca enerji düşük kalırsa kes (Önceden 3 saniyeydi, uzattık)
+  const maxLowEnergyDuration = 5; // Cut if energy remains low for 5 seconds (Previously it was 3 seconds, we extended it)
 
   for (let i = 1; i < scores.length - 1; i++) {
     if (scores[i] >= threshold && scores[i] >= scores[i-1] && scores[i] >= scores[i+1] && !processedIndices.has(i)) {
       
       const currentTime = i * interval;
       
-      // ANTI-OUTRO KONTROLÜ
-      // Kliplenecek bu zirve noktası, videonun son %10'luk dilimi veya son 15 saniyesi mi?
+      // ANTI-OUTRO CHECK
+      // Is this peak point to be clipped the last 10% or the last 15 seconds of the video?
       const isOutroRegion = currentTime > (videoDur - Math.max(15, videoDur * 0.1));
       
       if (isOutroRegion && visualScores) {
           let localVisSum = 0;
           let count = 0;
-          let windowSize = Math.floor(2 / interval); // Tepe noktası çevresindeki 2-4 saniyeye bak
+          let windowSize = Math.floor(2 / interval); // Look at the 2-4 seconds around the peak point
           for(let v = Math.max(0, i - windowSize); v <= Math.min(visualScores.length-1, i + windowSize); v++) {
               localVisSum += visualScores[v];
               count++;
@@ -275,13 +275,13 @@ function detectMoments(scores, sensitivity, videoDur, interval, visualScores) {
           let localVisAvg = localVisSum / (count || 1);
           
           if (localVisAvg < staticVisualThreshold) {
-              // Tepe anında dahi (müzik filan olsa bile) görsel çok statik
-              continue; // Bu anı tamamen yoksay!
+              // Even at the peak moment (even with music etc.) the visual is very static
+              continue; // Ignore this moment completely!
           }
       }
 
       let startIdx = i;
-      // Öncesine doğru genişlet...
+      // Expand backwards...
       while (startIdx > 0 && scores[startIdx] > cooldownThreshold && (i - startIdx) * interval < 15) {
           startIdx--;
       }
@@ -289,22 +289,22 @@ function detectMoments(scores, sensitivity, videoDur, interval, visualScores) {
       let endIdx = i;
       let lowEnergyCount = 0;
       
-      // Sonrasına doğru genişlet (ANTI-ERKEN KESİM KONTROLÜ)
+      // Expand forwards (ANTI-EARLY CUT CHECK)
       while (endIdx < scores.length - 1) {
         endIdx++;
         if (scores[endIdx] < cooldownThreshold) {
             lowEnergyCount++; 
         } else {
-            // Eğer enerji tekrar toparlarsa (örneğin konuştuysa), düşük enerji sayacını sıfırla!
+            // If energy recovers again (e.g. they spoke), reset the low energy counter!
             lowEnergyCount = 0; 
         }
         
-        // Düşük enerji (sessizlik) belirlediğimiz süreyi ('maxLowEnergyDuration' yani 5sn) geçerse kes.
-        // Ayrıca maksimum klibi sonsuza uzatmamak için genelde maks 60sn limit koyarız.
+        // If low energy (silence) exceeds our defined duration ('maxLowEnergyDuration' i.e. 5s), cut.
+        // Also, to avoid extending the maximum clip forever, we generally set a 60s max limit.
         if (lowEnergyCount > (maxLowEnergyDuration / interval) || (endIdx - startIdx) * interval > 60) break;
       }
 
-      // 5 saniyelik düşük enerji sessizliğini klibin içerisinden kırp (çok uzun sürmesin)
+      // Trim the 5 seconds of low energy silence from inside the clip (so it doesn't last too long)
       if (lowEnergyCount > 0) {
           endIdx = Math.max(i, endIdx - lowEnergyCount);
       }
@@ -312,7 +312,7 @@ function detectMoments(scores, sensitivity, videoDur, interval, visualScores) {
       for (let k = startIdx; k <= endIdx; k++) processedIndices.add(k);
       
       const dur = (endIdx - startIdx) * interval;
-      // KALİTE FİLTRESİ: Klip mininum 5 saniyesi olmalı! (Değerli klipler)
+      // QUALITY FILTER: Clip must be at least 5 seconds! (Valuable clips)
       if (dur >= 5) {
           peaks.push({ idx: i, startIdx, endIdx, score: scores[i] });
       }
@@ -320,7 +320,7 @@ function detectMoments(scores, sensitivity, videoDur, interval, visualScores) {
   }
 
   return peaks.sort((a,b) => b.score - a.score).slice(0, 10).map((p, rank) => {
-      // YENİ: Başlangıçtan önce 1.5 saniye, bitişten sonra 2.5 saniye ekstra "Nefes Payı" eklemeye devam ediyoruz.
+      // NEW: We continue to add an extra 1.5 seconds before start and 2.5 seconds after end as "Cooldown Tolerance".
       let sTime = Math.max(0, (p.startIdx * interval) - 1.5);
       let eTime = Math.min(videoDur, (p.endIdx * interval) + 2.5);
       
@@ -335,7 +335,7 @@ function detectMoments(scores, sensitivity, videoDur, interval, visualScores) {
   });
 }
 
-/* ================= YARDIMCILAR ================= */
+/* ================= HELPERS ================= */
 async function analyzeAudio(file) {
     try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -404,17 +404,17 @@ function updateProgress(p, text) {
     $('#progressPhase').innerText = text;
 }
 
-// Süreyi Dakika:Saniye formatında (1:10) veya düz saniye olarak göstermek için
+// To show duration in Minute:Second format (1:10) or straight seconds
 function formatTimeDisp(sec) {
     const m = Math.floor(sec / 60);
     const s = Math.floor(sec % 60);
-    return m > 0 ? `${m}:${s.toString().padStart(2, '0')}` : `${s}sn`;
+    return m > 0 ? `${m}:${s.toString().padStart(2, '0')}` : `${s}s`;
 }
 
 function renderMoments() {
     const grid = $('#momentsGrid');
     if (state.moments.length === 0) {
-        grid.innerHTML = '<div style="color:var(--text-muted); padding:2rem; text-align:center; width:100%">Viral olabilecek bir an bulunamadı. Lütfen hassasiyeti artırın.</div>';
+        grid.innerHTML = '<div style="color:var(--text-muted); padding:2rem; text-align:center; width:100%">No potential viral moments found. Please increase sensitivity.</div>';
         return;
     }
     state.moments.forEach(m => {
@@ -426,14 +426,14 @@ function renderMoments() {
                 <div class="card-badge">#${m.rank} Viral</div>
             </div>
             <div class="card-body">
-                <div style="font-weight:700; color:var(--accent-gold); margin-bottom:5px">${m.duration} Saniye Klip</div>
+                <div style="font-weight:700; color:var(--accent-gold); margin-bottom:5px">${m.duration} Second Clip</div>
                 <div style="font-size:.75rem; color:var(--text-secondary); margin-bottom:15px; font-family:monospace">
                     ${formatTimeDisp(m.startTime)} ➔ ${formatTimeDisp(m.endTime)}
                 </div>
                 
                 <div style="display:flex; gap:10px">
-                    <button class="btn btn-ghost" style="flex:1" onclick="preview(${m.startTime}, ${m.endTime})"><i class="fas fa-play"></i> İzle</button>
-                    <button class="btn btn-primary" style="flex:1" onclick="openActionModal(${m.startTime}, ${m.endTime}, 'Klibi İndir')"><i class="fas fa-download"></i> İndir</button>
+                    <button class="btn btn-ghost" style="flex:1" onclick="preview(${m.startTime}, ${m.endTime})"><i class="fas fa-play"></i> Preview</button>
+                    <button class="btn btn-primary" style="flex:1" onclick="openActionModal(${m.startTime}, ${m.endTime}, 'Download Clip')"><i class="fas fa-download"></i> Download</button>
                 </div>
             </div>
         `;
@@ -453,9 +453,9 @@ function drawTimeline() {
     });
 }
 
-/* ================= MANUEL KESİM & İNDİRME ================= */
+/* ================= MANUAL CUT & DOWNLOAD ================= */
 
-// "1:10" formatını saniyeye çevirir. "70" girilirse doğrudan saniye alır.
+// Converts "1:10" format to seconds. If "70" is entered, it takes seconds directly.
 function parseTimeInput(val) {
     if (!val) return 0;
     val = String(val).trim().replace(',', '.');
@@ -466,7 +466,7 @@ function parseTimeInput(val) {
     return parseFloat(val) || 0;
 }
 
-window.openActionModal = (start, end, title = 'Manuel Kesim') => {
+window.openActionModal = (start, end, title = 'Manual Cut') => {
     $('#modalTitle').innerHTML = `<i class="fas fa-scissors" style="color:var(--accent-viral)"></i> ${title}`;
     $('#modalStart').value = start || '';
     $('#modalEnd').value = end || '';
@@ -474,14 +474,14 @@ window.openActionModal = (start, end, title = 'Manuel Kesim') => {
 };
 
 $('#manualCutBtn').onclick = () => {
-    if(!state.videoFile) { showToast("Önce bir video seçmelisiniz!", "error"); return; }
-    openActionModal('', '', 'Manuel Kesim');
+    if(!state.videoFile) { showToast("You must select a video first!", "error"); return; }
+    openActionModal('', '', 'Manual Cut');
 };
 
 $('#modalPreviewBtn').onclick = () => {
     const start = parseTimeInput($('#modalStart').value);
     const end = parseTimeInput($('#modalEnd').value);
-    if (end <= start) { showToast("Bitiş süresi başlangıçtan büyük olmalı!", "error"); return; }
+    if (end <= start) { showToast("End time must be greater than start time!", "error"); return; }
     
     $('#actionModal').classList.remove('show');
     preview(start, end);
@@ -501,15 +501,15 @@ $('#modalExportBtn').onclick = async () => {
     const end = parseTimeInput($('#modalEnd').value);
     const btn = $('#modalExportBtn');
     
-    if (end <= start) { showToast("Bitiş süresi başlangıçtan büyük olmalı!", "error"); return; }
-    if (!state.videoFile) { showToast("Video dosyası bulunamadı!", "error"); return; }
+    if (end <= start) { showToast("End time must be greater than start time!", "error"); return; }
+    if (!state.videoFile) { showToast("Video file not found!", "error"); return; }
 
     btn.disabled = true;
     $('#modalPreviewBtn').disabled = true;
     $('#recordProgress').classList.remove('hidden');
 
     try {
-        if (!state.videoFile) { showToast("Video bulunamadı", "error"); return; }
+        if (!state.videoFile) { showToast("Video not found", "error"); return; }
         
         const xhr = new XMLHttpRequest();
         // Query parameters bypass the need for FormData parsing
@@ -524,9 +524,9 @@ $('#modalExportBtn').onclick = async () => {
                 const percent = (e.loaded / e.total) * 100;
                 $('#uploadProgressBar').style.width = percent + '%';
                 if (Math.round(percent) === 100) {
-                    $('#progressText').innerText = "Video kesiliyor, son dokunuşlar...";
+                    $('#progressText').innerText = "Video is being cut, final touches...";
                 } else {
-                    $('#progressText').innerText = `Veri Aktarılıyor: %${Math.round(percent)}`;
+                    $('#progressText').innerText = `Transferring Data: %${Math.round(percent)}`;
                 }
             }
         };
@@ -547,15 +547,15 @@ $('#modalExportBtn').onclick = async () => {
                 a.href = url;
                 a.download = `ViralCut_${start}s-${end}s.mp4`;
                 a.click();
-                showToast("Klip yüksek kalitede başarıyla indirildi!", "success");
+                showToast("Clip downloaded successfully in high quality!", "success");
             } else {
                 const reader = new FileReader();
                 reader.onload = () => {
                     try {
                         const errData = JSON.parse(reader.result);
-                        showToast("Hata: " + (errData.detail || errData.error || "Kesim başarısız oldu"), "error");
+                        showToast("Error: " + (errData.detail || errData.error || "Cut failed"), "error");
                     } catch {
-                        showToast("Hata: Beklenmeyen bir sunucu hatası.", "error");
+                        showToast("Error: Unexpected server error.", "error");
                     }
                 };
                 reader.readAsText(xhr.response);
@@ -564,7 +564,7 @@ $('#modalExportBtn').onclick = async () => {
         };
 
         xhr.onerror = () => {
-            showToast("Hata: Sunucu ile bağlantı kurulamadı.", "error");
+            showToast("Error: Could not connect to the server.", "error");
             cleanup();
         };
 
@@ -572,7 +572,7 @@ $('#modalExportBtn').onclick = async () => {
         
     } catch (e) {
         console.error(e);
-        showToast("Hata: " + e.message, "error");
+        showToast("Error: " + e.message, "error");
         btn.disabled = false;
         $('#modalPreviewBtn').disabled = false;
         $('#recordProgress').classList.add('hidden');
